@@ -38,6 +38,9 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Skybox
+    uniqueID: 3705140963
+    locked: 0
   - name: BackgroundEnviornment
     uniqueID: 3480605417
     locked: 0

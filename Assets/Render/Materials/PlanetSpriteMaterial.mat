@@ -77,7 +77,7 @@ Material:
     - _SrcBlend: 1
     - _UVSec: 0
     - _ZWrite: 1
-    - _r: 89.88478
+    - _r: 5000
     - _sealevel: 0
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
