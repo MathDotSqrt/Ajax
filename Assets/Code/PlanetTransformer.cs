@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PlanetTransformer : MonoBehaviour {
-
-	public Material material;
-
 	public float radiusOnSurface = 5000;
 	public float sealevel = 0;
 
@@ -13,10 +10,13 @@ public class PlanetTransformer : MonoBehaviour {
 	[Min(0)] public float beta = 1;
 	[Min(0)] public float yOffset = 0;
 
-	void Start() {
-		material.SetFloat("_r", radiusOnSurface);
-		material.SetFloat("_sealevel", sealevel);
+	void Awake() {
+		Shader.SetGlobalFloat("RADIUS", radiusOnSurface);
+		Shader.SetGlobalFloat("SEALEVEL", sealevel);
+	}
 
+	void Start() {
+	
 	}
 
 	void OnPreRender() {
@@ -25,7 +25,7 @@ public class PlanetTransformer : MonoBehaviour {
 		y = beta * Mathf.Max(y, 0);
 
 		float r = radiusOnSurface * (1 - y / ((Mathf.Abs(y) + alpha)));
-		material.SetFloat("_r", r);
+		Shader.SetGlobalFloat("RADIUS", r);
 	}
 
 }

@@ -55,20 +55,22 @@
             };
 
             
-            uniform float _r;
-            uniform float _sealevel;
+            //uniform float _r;
+            //uniform float _sealevel;
+            float RADIUS = 1000;
+            float SEALEVEL = 0;
 
             float2 transform(float2 cartesian) {
-                cartesian.y += _sealevel;
+                cartesian.y += SEALEVEL;
 
-                float r = _r;
+                float r = RADIUS;
 
-                float h = _r * exp(cartesian.y / _r);
-                float phi = cartesian.x / _r;
+                float h = RADIUS * exp(cartesian.y / RADIUS);
+                float phi = cartesian.x / RADIUS;
 
                 float2 polar;
                 polar.x = h * sin(phi);
-                polar.y = h * cos(phi) - _r;
+                polar.y = h * cos(phi) - RADIUS;
                 return polar;
             }
 
