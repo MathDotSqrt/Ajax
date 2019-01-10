@@ -25,14 +25,14 @@ public class ReflectCameraResolution : MonoBehaviour {
 		reflectionTexture.autoGenerateMips = false;
 		reflectionTexture.antiAliasing = 1;
 		reflectionTexture.filterMode = FilterMode.Point;
-		reflectionTexture.wrapMode = TextureWrapMode.Mirror;
+		reflectionTexture.wrapMode = TextureWrapMode.Clamp;
 		reflectionTexture.Create();
 
 
 		reflectionCamera.targetTexture = reflectionTexture;
 
 		reflectionMaterial = GetComponent<MeshRenderer>().material;
-		reflectionMaterial.SetTexture("ReflectionTexture", reflectionTexture);
+		reflectionMaterial.SetTexture("_ReflectionTexture", reflectionTexture);
 	}
 
 	// Update is called once per frame

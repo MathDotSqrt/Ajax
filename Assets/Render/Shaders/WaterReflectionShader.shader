@@ -2,7 +2,7 @@
 {
     Properties
     {
-
+        _DistortionTexture ("Distortion Texture", 2D) = "white" {}
     }
     SubShader
     {
@@ -27,37 +27,87 @@
             struct fragin
             {
                 float4 vertex : SV_POSITION;
-                float2 uv : TEXCOORD0;
+                float2 reflection_uv : TEXCOORD0;
+                float2 distortion_uv : TEXCOORD1;
             };
 
-            uniform sampler2D ReflectionTexture;
-            uniform float4 ReflectionTexture_ST;
+            uniform sampler2D _ReflectionTexture;
+            uniform sampler2D _DistortionTexture;
+            uniform float4 _DistortionTexture_ST;
+
 
             uniform float quadY;
 
             fragin vert (vertin v)
             {
                 fragin o;
-                o.vertex = UnityObjectToClipPos(v.vertex);
-                float4 quadClip = UnityWorldToClipPos(float4(0, quadY, 0, 1));
-                quadClip.xy /= quadClip.w;
 
-                o.uv = o.vertex.xy / o.vertex.w;
+                //*Transforms quads vertex to clipspace*//
+                o.vertex = UnityObjectToClipPos(v.vertex);
+
+                //* Transforms top left vertex of quad to clip space *// 
+                float4 quadClipPos = UnityWorldToClipPos(float4(0, quadY, 0, 1));
+                quadClipPos.xy /= quadClipPos.w;
+
+                //* Sets reflection uv to clipspace of the vertex *// 
+                o.reflection_uv = o.vertex.xy / o.vertex.w;
                
-                o.uv = (o.uv + 1) / 2;
-                o.uv.y -= quadClip.y + .01;
-                o.uv.y = 1 - o.uv.y;
+                //* Transforms coordinates from screen space (-1, 1) to texture space (0, 1) *//
+                o.reflection_uv = (o.reflection_uv + 1) / 2;
+                o.reflection_uv.y = 1 - o.reflection_uv.y;
+
+                //* Offsets the uv y with the top left quad in clip space *//
+                o.reflection_uv.y += quadClipPos.y + .01;
+
+                //* Gets uv coordinates of the distortion texture *//
+                o.distortion_uv = v.uv;//TRANSFORM_TEX(v.uv, _DistortionTexture);
+
 
                 return o;
             }
 
+            float2 stair(float2 uv, float scale){
+                uv *= scale;
+                uv = floor(uv);
+                uv /= scale;
+
+                return uv;
+            }
+
             fixed4 frag (fragin i) : SV_Target
             {
-                //half2 offset = half2(2 * (0.5 - i.uv.x) * (i.uv.y ), 0.0f);
 
-                // sample the texture
-                fixed4 col = tex2D(ReflectionTexture, i.uv);
-                return col;
+
+
+                half2 offset = half2(1 * (.5 - i.reflection_uv.x) * (1 - i.distortion_uv.y), 0.0f);
+                
+                //offset = stair(offset, 20);
+                //i.distortion_uv = stair(i.distortion_uv, 200);
+
+
+                half2 distortion_sample_uv = (i.distortion_uv + offset) * 1;
+
+                //distortion_sample_uv = stair(distortion_sample_uv, 100);
+
+                distortion_sample_uv.x -= _Time.x;
+
+                fixed4 distortion_offset = tex2D(_DistortionTexture, distortion_sample_uv);
+                fixed4 c = distortion_offset;
+                c.rg /= 2;
+                //c.b /= 3;
+
+                distortion_offset.b = 0;
+                distortion_offset -= .5;
+                distortion_offset /= 25;
+                distortion_offset.y /= 5;
+
+                float2 sample_reflection = i.reflection_uv;      
+                sample_reflection.xy += distortion_offset.rg;
+
+                fixed4 reflection_col = tex2D(_ReflectionTexture, sample_reflection);
+                return (reflection_col * .3 + c * .7);
+                //return reflection_col;
+                //return distortion_offset;
             }
             ENDCG
         }
