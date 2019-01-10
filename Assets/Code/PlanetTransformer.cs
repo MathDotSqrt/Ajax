@@ -16,7 +16,7 @@ public class PlanetTransformer : MonoBehaviour {
 	}
 
 	void Start() {
-	
+
 	}
 
 	void OnPreRender() {

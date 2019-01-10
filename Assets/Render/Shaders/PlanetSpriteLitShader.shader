@@ -47,8 +47,8 @@ Shader "ChrisShaders/PlanetSpriteLitShader"
 
         //uniform float _r;
         //uniform float _sealevel;
-        float RADIUS = 1000;
-        float SEALEVEL = 0;
+        uniform float RADIUS = 1000;
+        uniform float SEALEVEL = 0;
 
         float2 transform(float2 cartesian) {
             cartesian.y += SEALEVEL;
