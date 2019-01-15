@@ -81,13 +81,11 @@
                 UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(OUT);
 
                 float4 world_vertex = mul(UNITY_MATRIX_M, IN.vertex);
-                //world_vertex.xy = transform(world_vertex.xy); 
-
-                float4 MATRIX_MV = mul(UNITY_MATRIX_V, world_vertex);
+                float4 camera_vertex = mul(UNITY_MATRIX_V, world_vertex);
                 
-                MATRIX_MV.xy = transform(MATRIX_MV.xy);
+                camera_vertex.xy = transform(camera_vertex.xy);
 
-                OUT.vertex = mul(UNITY_MATRIX_P, MATRIX_MV);
+                OUT.vertex = mul(UNITY_MATRIX_P, camera_vertex);
                 OUT.texcoord = IN.texcoord;
                 OUT.color = IN.color * _Color;
 

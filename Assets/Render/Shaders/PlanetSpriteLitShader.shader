@@ -34,7 +34,7 @@ Shader "ChrisShaders/PlanetSpriteLitShader"
         CGPROGRAM
         #pragma vertex vert nofog nolightmap nodynlightmap keepalpha noinstancing
 
-        #pragma surface surf Lambert 
+        #pragma surface surf Lambert alpha:premul
         #pragma multi_compile _ PIXELSNAP_ON
         #pragma multi_compile _ ETC1_EXTERNAL_ALPHA
         #include "UnitySprites.cginc"
@@ -79,7 +79,7 @@ Shader "ChrisShaders/PlanetSpriteLitShader"
 
         void surf (Input IN, inout SurfaceOutput o)
         {
-            fixed4 c = SampleSpriteTexture (IN.uv_MainTex) * IN.color;
+            fixed4 c = SampleSpriteTexture(IN.uv_MainTex) * IN.color;
             o.Albedo = c.rgb * c.a;
             o.Alpha = c.a;
         }
