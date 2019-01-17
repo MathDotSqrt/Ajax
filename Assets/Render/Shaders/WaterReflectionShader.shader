@@ -79,20 +79,23 @@
 
 
                 //* Affine Transform offset *//
-                half2 offset = half2(.5 * (.5 - i.reflection_uv.x) * (1 - i.distortion_uv.y), 0.0f);
+                half2 offset = half2(.04 * (.5 - i.reflection_uv.x) * (1 - i.distortion_uv.y), 0.0f);
                 
                 //* UV sample coords with the affine transfer offset *//
-                half2 distortion_sample_uv = (i.distortion_uv + offset) * 1;
-                half2 distortion_sample_uv2 = (i.distortion_uv + offset) * 4;
+                half2 distortion_sample_uv1 = (i.distortion_uv + offset);
+                half2 distortion_sample_uv2 = (i.distortion_uv + offset) * 3;
+                distortion_sample_uv1.x *= 10;
+                distortion_sample_uv2.x *= 10;
+
 
                 //* Transforms UV.x with time to create water flow effect
-                distortion_sample_uv.x -= _Time.x;
+                distortion_sample_uv1.x -= _Time.x;
                 distortion_sample_uv2.x -= _Time.x * 2;
 
-                fixed4 distortion_offset = tex2D(_DistortionTexture, distortion_sample_uv);
-                fixed4 c = (distortion_offset + tex2D(_DistortionTexture, distortion_sample_uv2)) / 2;
-                c.rg /= 2;
-                //c.b /= 3;
+                fixed4 distortion_color1 = tex2D(_DistortionTexture, distortion_sample_uv1);
+                fixed4 distortion_color2 = tex2D(_DistortionTexture, distortion_sample_uv2);
+                fixed4 distortion_color = (distortion_color1 + distortion_color2) / 2;
+                fixed4 distortion_offset = distortion_color;
 
                 distortion_offset.b = 0;
                 distortion_offset -= .5;
@@ -103,7 +106,7 @@
                 sample_reflection.xy += distortion_offset.rg;
 
                 fixed4 reflection_col = tex2D(_ReflectionTexture, sample_reflection);
-                return (reflection_col * .2 + c * .8);
+                return reflection_col * .6 + distortion_color * .4;
                 //return reflection_col;
                 //return distortion_offset;
             }
