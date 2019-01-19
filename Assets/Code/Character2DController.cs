@@ -1,14 +1,14 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Character2DController : MonoBehaviour {
+[RequireComponent(typeof(Animator), typeof(Rigidbody2D))]
+public class Character2DController : BaseController {
 	public float jumpForce = 100f;
 	public float moveSpeed = 10f;
 	[Range(0f, 1f)] public float smoothedTime = .5f;
 	[Range(0f, 1f)] public float crouchSpeed = .3f;
-
-	public LayerMask whatIsGround;
 
 	public Transform groundCheck = null;
 	public Transform ceilingCheck = null;
@@ -20,8 +20,6 @@ public class Character2DController : MonoBehaviour {
 	private Transform playerTransform;
 	private Rigidbody2D playerRigidBody;
 	private Animator playerAnimator;
-
-
 
 	private bool isOnGround = false;
 	private float playerDirection = 1;
@@ -35,7 +33,7 @@ public class Character2DController : MonoBehaviour {
 	}
 
 	void FixedUpdate() {
-		Collider2D[] colliders = Physics2D.OverlapCircleAll(groundCheck.position, groundRadius, whatIsGround);
+		Collider2D[] colliders = Physics2D.OverlapCircleAll(groundCheck.position, groundRadius);
 
 		isOnGround = false;
 
@@ -52,7 +50,7 @@ public class Character2DController : MonoBehaviour {
 
 	}
 
-	public void Move(float direction) {
+	public override void Move(float direction) {
 		if (direction != 0 && Mathf.Sign(direction) != Mathf.Sign(playerDirection))
 			Flip();
 
@@ -62,13 +60,25 @@ public class Character2DController : MonoBehaviour {
 		playerRigidBody.velocity = Vector2.SmoothDamp(currentVel, targetVel, ref smoothedVel, smoothedTime);
 	}
 
-	public void Jump() {
+	public override void Attack() {
+
+	}
+
+	public override void Crouch(float vertical) {
+
+	}
+
+	public override void Jump() {
 		if (isOnGround) {
 			isOnGround = false;
 			Vector2 currentVel = playerRigidBody.velocity;
 			currentVel.y = jumpForce;
 			playerRigidBody.velocity = currentVel;
 		}
+	}
+
+	public override void Slide() {
+
 	}
 
 	public void Flip() {
