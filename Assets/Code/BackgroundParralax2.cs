@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class BackgroundParralax2 : MonoBehaviour {
 	public Transform[] backgrounds;
+	public Vector2[] parallax;
 
 	private Transform[] backgroundSwaps;
 	private float[] backgroundWidths;
@@ -27,6 +28,9 @@ public class BackgroundParralax2 : MonoBehaviour {
 
 			backgroundWidths[i] = cloneBackground.GetComponent<SpriteRenderer>().bounds.size.x;
 			backgroundY[i] = backgrounds[i].position.y;
+
+			parallax[i].x = 1f / parallax[i].x;
+			parallax[i].y = 1f / parallax[i].y;
 		}
 
 		lastCameraPosition = camera.position;
@@ -39,11 +43,10 @@ public class BackgroundParralax2 : MonoBehaviour {
 	void OnPreRender() {
 		Vector3 delta = (camera.position - lastCameraPosition);
 		for (int i = 0; i < backgrounds.Length; i++) {
-			float parallaxScale = 1f / (backgrounds[i].position.z + 1);
 
 			Vector3 position = backgrounds[i].position;
-			position.x -= delta.x * (parallaxScale);
-			position.y -= delta.y * (parallaxScale);
+			position.x -= delta.x * parallax[i].x;
+			position.y -= delta.y * parallax[i].y;
 
 			backgrounds[i].position = position;
 			backgroundSwaps[i].position = position;
@@ -51,14 +54,12 @@ public class BackgroundParralax2 : MonoBehaviour {
 			Vector3 localPosition = backgrounds[i].localPosition;
 			float direction = -Mathf.Sign(localPosition.x);
 			backgroundSwaps[i].Translate(direction * backgroundWidths[i], 0, 0);
-			if (Mathf.Abs(localPosition.x) > backgroundWidths[i] / 2f) {
-				Debug.Log(backgrounds[i].position + " : " + backgroundSwaps[i].position);
 
+
+			if (Mathf.Abs(localPosition.x) > backgroundWidths[i] / 2f) {
 				Transform tempBackground = backgrounds[i];
 				backgrounds[i] = backgroundSwaps[i];
 				backgroundSwaps[i] = tempBackground;
-				Debug.Log(backgrounds[i].position + " : " + backgroundSwaps[i].position);
-
 			}
 		}
 
