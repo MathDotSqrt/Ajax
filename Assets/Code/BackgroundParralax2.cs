@@ -18,7 +18,7 @@ public class BackgroundParralax2 : MonoBehaviour {
 		backgroundSwaps = new Transform[backgrounds.Length];
 		backgroundWidths = new float[backgrounds.Length];
 		backgroundY = new float[backgrounds.Length];
-		camera = GetComponent<Camera>().transform;
+		camera = Camera.main.transform;
 
 
 		for (int i = 0; i < backgrounds.Length; i++) {
@@ -31,39 +31,35 @@ public class BackgroundParralax2 : MonoBehaviour {
 
 		lastCameraPosition = camera.position;
 		firstCameraPosition = camera.position;
+
 	}
 
+	private Vector3 vel = Vector3.zero;
 	// Update is called once per frame
 	void OnPreRender() {
-		Vector2 cameraDelta = (camera.position - lastCameraPosition) * Time.deltaTime;
-
+		Vector3 delta = (camera.position - lastCameraPosition);
 		for (int i = 0; i < backgrounds.Length; i++) {
-			float parallaxScale = 60f / (backgrounds[i].position.z + 1);
+			float parallaxScale = 1f / (backgrounds[i].position.z + 1);
 
-			//set background to y = 0
-			Vector3 pos = backgrounds[i].position;
-			pos.y = backgroundY[i] - camera.position.y / parallaxScale ;
-			backgrounds[i].position = pos;
+			Vector3 position = backgrounds[i].position;
+			position.x -= delta.x * (parallaxScale);
+			position.y -= delta.y * (parallaxScale);
 
-			//calculate parallax
-			backgrounds[i].Translate(-cameraDelta.x * parallaxScale, 0, 0);
+			backgrounds[i].position = position;
+			backgroundSwaps[i].position = position;
 
-			//offset direction
 			Vector3 localPosition = backgrounds[i].localPosition;
 			float direction = -Mathf.Sign(localPosition.x);
+			backgroundSwaps[i].Translate(direction * backgroundWidths[i], 0, 0);
+			if (Mathf.Abs(localPosition.x) > backgroundWidths[i] / 2f) {
+				Debug.Log(backgrounds[i].position + " : " + backgroundSwaps[i].position);
 
-			//background swap offset
-			pos.x += direction * backgroundWidths[i];
-			backgroundSwaps[i].position = pos;
-
-			//swap background with backgroundswap
-			if (Mathf.Abs(localPosition.x) >= backgroundWidths[i] / 2f) {
 				Transform tempBackground = backgrounds[i];
 				backgrounds[i] = backgroundSwaps[i];
 				backgroundSwaps[i] = tempBackground;
+				Debug.Log(backgrounds[i].position + " : " + backgroundSwaps[i].position);
 
 			}
-
 		}
 
 		lastCameraPosition = camera.position;
