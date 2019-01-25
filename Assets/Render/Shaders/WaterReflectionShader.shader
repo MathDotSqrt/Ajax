@@ -51,13 +51,13 @@
 
                 //* Sets reflection uv to clipspace of the vertex *// 
                 o.reflection_uv = o.vertex.xy / o.vertex.w;
-               
+
                 //* Transforms coordinates from screen space (-1, 1) to texture space (0, 1) *//
                 o.reflection_uv = (o.reflection_uv + 1) / 2;
-                o.reflection_uv.y = 1 - o.reflection_uv.y;
+                //o.reflection_uv.y = 1 - o.reflection_uv.y;
 
                 //* Offsets the uv y with the top left quad in clip space *//
-                o.reflection_uv.y += quadClipPos.y + .01;
+                o.reflection_uv.y -= quadClipPos.y + .01;
 
                 //* Gets uv coordinates of the distortion texture *//
                 o.distortion_uv = v.uv;//TRANSFORM_TEX(v.uv, _DistortionTexture);
